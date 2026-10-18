@@ -1,151 +1,148 @@
 #include <iostream>
 #include <string>
 
+
 using namespace std;
 
-const int MAX_ISLANDS = 10;
+const int MAXI = 10;
 const int INF = 1000000000;
 
-string islandNames[MAX_ISLANDS];
-int islandCount = 0;
-int adjacency[MAX_ISLANDS][MAX_ISLANDS];
+string nombres[MAXI];
+int cantidad = 0;
+int ady[MAXI][MAXI];
 
-int islandIndex(const string& name) {
-    for (int index = 0; index < islandCount; ++index) {
-        if (islandNames[index] == name) {
-            return index;
+int indiceIsla(const string& nombre) {
+    for (int i = 0; i < cantidad; i++) {
+        if (nombres[i] == nombre) {
+            return i;
         }
     }
 
-    if (islandCount == MAX_ISLANDS) {
+    if (cantidad == MAXI) {
         return -1;
     }
 
-    islandNames[islandCount] = name;
-    return islandCount++;
+    nombres[cantidad] = nombre;
+    cantidad++;
+    return cantidad - 1;
 }
 
 int main() {
-    int islandTotal;
-    int routeTotal;
-    int initialProvisions;
-    int dailyConsumption;
+    int N, M;
+    int Pinicial, C;
 
-    if (!(cin >> islandTotal >> routeTotal) || islandTotal < 2 || islandTotal > MAX_ISLANDS ||
-        routeTotal < 1 || routeTotal > 20) {
+    cin >> N >> M;
+    if (N < 2 || N > MAXI || M < 1 || M > 20) {
         return 1;
     }
 
-    if (!(cin >> initialProvisions >> dailyConsumption) || initialProvisions < 1 ||
-        initialProvisions > 1000 || dailyConsumption < 1 || dailyConsumption > 50) {
+    cin >> Pinicial >> C;
+    if (Pinicial < 1 || Pinicial > 1000 || C < 1 || C > 50) {
         return 1;
     }
 
-    string originName;
-    string destinationName;
-    if (!(cin >> originName >> destinationName)) {
-        return 1;
-    }
+    string origenNombre, destinoNombre;
+    cin >> origenNombre >> destinoNombre;
 
-    for (int row = 0; row < MAX_ISLANDS; ++row) {
-        for (int column = 0; column < MAX_ISLANDS; ++column) {
-            adjacency[row][column] = 0;
+    for (int i = 0; i < MAXI; i++) {
+        for (int j = 0; j < MAXI; j++) {
+            ady[i][j] = 0;
         }
     }
 
-    int origin = islandIndex(originName);
-    int destination = islandIndex(destinationName);
-    if (origin == -1 || destination == -1) {
+    int origen = indiceIsla(origenNombre);
+    int destino = indiceIsla(destinoNombre);
+    if (origen == -1 || destino == -1) {
         return 1;
     }
 
-    for (int route = 0; route < routeTotal; ++route) {
-        string fromName;
-        string toName;
-        int days;
+    for (int i = 0; i < M; i++) {
+        string a, b;
+        int dias;
 
-        if (!(cin >> fromName >> toName >> days) || days < 1 || days > 1000) {
+        cin >> a >> b >> dias;
+        if (dias < 1 || dias > 1000) {
             return 1;
         }
 
-        int from = islandIndex(fromName);
-        int to = islandIndex(toName);
-        if (from == -1 || to == -1 || islandCount > islandTotal) {
+        int u = indiceIsla(a);
+        int v = indiceIsla(b);
+        if (u == -1 || v == -1 || cantidad > N) {
             return 1;
         }
 
-        if (adjacency[from][to] == 0 || days < adjacency[from][to]) {
-            adjacency[from][to] = days;
-            adjacency[to][from] = days;
+        if (ady[u][v] == 0 || dias < ady[u][v]) {
+            ady[u][v] = dias;
+            ady[v][u] = dias;
         }
     }
 
-    int distance[MAX_ISLANDS];
-    int previous[MAX_ISLANDS];
-    bool visited[MAX_ISLANDS];
+    int dist[MAXI];
+    int previo[MAXI];
+    bool visitado[MAXI];
 
-    for (int index = 0; index < islandCount; ++index) {
-        distance[index] = INF;
-        previous[index] = -1;
-        visited[index] = false;
+    for (int i = 0; i < cantidad; i++) {
+        dist[i] = INF;
+        previo[i] = -1;
+        visitado[i] = false;
     }
-    distance[origin] = 0;
+    dist[origen] = 0;
 
-    for (int step = 0; step < islandCount; ++step) {
-        int current = -1;
+    for (int i = 0; i < cantidad; i++) {
+        int u = -1;
 
-        for (int index = 0; index < islandCount; ++index) {
-            if (!visited[index] && distance[index] != INF &&
-                (current == -1 || distance[index] < distance[current])) {
-                current = index;
+        for (int j = 0; j < cantidad; j++) {
+            if (!visitado[j] && dist[j] != INF && (u == -1 || dist[j] < dist[u])) {
+                u = j;
             }
         }
 
-        if (current == -1) {
+        if (u == -1) {
             break;
         }
 
-        visited[current] = true;
+        visitado[u] = true;
 
-        for (int neighbor = 0; neighbor < islandCount; ++neighbor) {
-            if (adjacency[current][neighbor] > 0 && !visited[neighbor] &&
-                distance[current] + adjacency[current][neighbor] < distance[neighbor]) {
-                distance[neighbor] = distance[current] + adjacency[current][neighbor];
-                previous[neighbor] = current;
+        for (int v = 0; v < cantidad; v++) {
+            if (ady[u][v] > 0 && !visitado[v] && dist[u] + ady[u][v] < dist[v]) {
+                dist[v] = dist[u] + ady[u][v];
+                previo[v] = u;
             }
         }
     }
 
-    if (distance[destination] == INF) {
+    if (dist[destino] == INF) {
         return 1;
     }
 
-    int path[MAX_ISLANDS];
-    int pathLength = 0;
-    for (int current = destination; current != -1; current = previous[current]) {
-        path[pathLength++] = current;
+    int camino[MAXI];
+    int largo = 0;
+
+    for (int i = destino; i != -1; i = previo[i]) {
+        camino[largo] = i;
+        largo++;
     }
 
-    for (int index = pathLength - 1; index >= 0; --index) {
-        cout << islandNames[path[index]];
-        if (index > 0) {
+    for (int i = largo - 1; i >= 0; i--) {
+        cout << nombres[camino[i]];
+        if (i > 0) {
             cout << " -> ";
         }
     }
-    cout << '\n';
+    cout << endl;
 
-    int finalDays = distance[destination];
-    int remainingProvisions = initialProvisions - finalDays * dailyConsumption;
+    int Dfinal = dist[destino];
+    int Rfinal = Pinicial - Dfinal * C;
 
-    if (remainingProvisions > 0) {
-        cout << "Atenea los guió sabiamente en " << finalDays
-             << " días. Provisiones restantes: " << remainingProvisions << '\n';
-    } else if (remainingProvisions == 0) {
+    if (Rfinal > 0) {
+        cout << "Atenea los guió sabiamente en " << Dfinal
+             << " días. Provisiones restantes: " << Rfinal << endl;
+    } else if (Rfinal == 0) {
         cout << "Los hombres llegaron con lo justo. Atenea los guió en "
-             << finalDays << " días a su destino" << '\n';
+             << Dfinal << " días a su destino" << endl;
     } else {
         cout << "Los hombres no sobrevivieron a la furia de Poseidón, lamentablemente "
-             << "todos han perecido en el viaje, Atenea se encuentra decepcionada" << '\n';
+             << "todos han perecido en el viaje, Atenea se encuentra decepcionada" << endl;
     }
 
     return 0;
