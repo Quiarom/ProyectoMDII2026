@@ -135,15 +135,15 @@ int main() {
     int Rfinal = Pinicial - Dfinal * C;
 
     if (Rfinal > 0) {
-        cout << "Atenea los guió sabiamente en " << Dfinal
-             << " días. Provisiones restantes: " << Rfinal << endl;
-    } else if (Rfinal == 0) {
-        cout << "Los hombres llegaron con lo justo. Atenea los guió en "
-             << Dfinal << " días a su destino" << endl;
+        cout << "Atenea los guio sabiamente en " << Dfinal
+            << " dias. Provisiones restantes: " << Rfinal << endl;
+    } else if (Rfinal == 0) {// Si bien en el proyecto, dice "llegaron a su hogar con lo justo", en el ejemplo de salida, dice "llegaron con lo justo", para respetar la del caso"
+        cout << "Los hombres llegaron con lo justo. Atenea los guio en "
+            << Dfinal << " dias a su destino" << endl;
     } else {
-        cout << "Los hombres no sobrevivieron a la furia de Poseidón, lamentablemente "
-             << "todos han perecido en el viaje, Atenea se encuentra decepcionada" << endl;
-    }
+        cout << "Los hombres no sobrevivieron a la furia de Poseidon, lamentablemente "
+            << "todos han perecido en el viaje, Atenea se encuentra decepcionada" << endl;
+    } 
 
     return 0;
 }
